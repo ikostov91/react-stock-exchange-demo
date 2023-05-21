@@ -1,9 +1,9 @@
+import Header from "./layout/header";
+
 function App() {
   return (
     <div className="App">
-      <header className="header">
-        <span>HEADER</span>
-      </header>
+      <Header />
       <main className="main">
         <span>MAIN</span>
       </main>
