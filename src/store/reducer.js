@@ -7,31 +7,46 @@ const initialState = {
   selectedCompany: null,
   chartData: [],
   companiesLoading: false,
-  chartLoading: false
+  chartLoading: false,
+  error: null
 };
+
+const rootUrl = process.env.NODE_ENV === "production" ? "https://data.nasdaq.com" : ""
 
 const createExtraActions = () => {
   const fetchCompanies = createAsyncThunk('stockExchange/fetch-companies', (
-    async () => {
-      const response = await fetch(`/api/v3/datasets/?database_code=BSE&api_key=${process.env.REACT_APP_API_KEY}`, {
-        method: "GET",
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-        }
-      });
-      return response.json();
+    async (obj, { rejectWithValue }) => {
+      try {
+        const response = await fetch(`${rootUrl}/api/v3/datasets/?database_code=BSE&api_key=${process.env.REACT_APP_API_KEY}`, {
+          method: "GET",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin':'*'
+          }
+        }).then(res => res.json());        
+        return response;
+      } catch (error) {
+        throw rejectWithValue(error);
+      }
     }
   ));
 
   const fetchChartData = createAsyncThunk('stockExchange/fetch-chart-data', (
-    async (dataset) => {
-      const response = await fetch(`api/v3/datasets/${process.env.REACT_APP_DATABASE}/${dataset}/data.json?column_index=1&column_index=4&api_key=${process.env.REACT_APP_API_KEY}`, {
-        method: "GET",
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-        }
-      });
-      return response.json();
+    async (dataset, { rejectWithValue }) => {
+      try {
+        const response = await fetch(`${rootUrl}/api/v3/datasets/${process.env.REACT_APP_DATABASE}/${dataset}/data.json?column_index=1&column_index=4&api_key=${process.env.REACT_APP_API_KEY}`, {
+          method: "GET",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin':'*'
+          }
+        }).then(res => res.json());
+        return response;
+      } catch (error) {
+        throw rejectWithValue(error);
+      }
     }
   ));
 
@@ -54,6 +69,7 @@ const createExtraReducers = (builder) => {
     });
     builder.addCase(extraActions.fetchCompanies.rejected, (state) => {
       state.companiesLoading = false;
+      state.error = "There was an error while fetching the companies."
     })
   };
 
@@ -67,6 +83,7 @@ const createExtraReducers = (builder) => {
     });
     builder.addCase(extraActions.fetchChartData.rejected, (state) => {
       state.chartLoading = false;
+      state.error = "There was an error while fetching the chart data."
     })
   };
 
@@ -86,6 +103,12 @@ const slice = createSlice({
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
+    dismissError: (state) => {
+      state.error = null;
     }
   },
   extraReducers: builder => createExtraReducers(builder)
