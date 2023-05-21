@@ -3,13 +3,13 @@
   width: 100%;
   height: 100%;
 
-  .no-data-container {
+  .chart-overlay {
     position: absolute;
     width: 100%;
     height: 100%;
     background-color: rgb(255 255 255 / 0.7);
 
-    .no-data-label {
+    .overlay-label {
       position: absolute;
       text-align: center;
       top: 0;

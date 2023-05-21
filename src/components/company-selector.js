@@ -1,29 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import DropdownSelector from './form-components/dropdown-selector';
-import { mapCompanies } from '../helpers';
+import { useDispatch, useSelector } from 'react-redux';
+import { appActions } from '../store';
 
 const CompanySelector = () => {
-  const [companies, setCompaies] = useState([]);
+  const { companies, companiesLoading } = useSelector((state) => state.appReducer);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetch(`/api/v3/datasets/?database_code=BSE&api_key=${process.env.REACT_APP_API_KEY}`, {
-      method: "GET",
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      }
-    })
-      .then(res => res.json())
-      .then(dataset => {
-        setCompaies(mapCompanies(dataset))
-      })
-      .catch((err) => {
-        console.error(err);
-     })
+    dispatch(appActions.fetchCompanies());
   }, []);
+
+  const handleOnSelectCompany = (selection) => {
+    dispatch(appActions.clearChart());
+
+    if (!selection) {
+      dispatch(appActions.selectCompany(null));
+      return;
+    }
+
+    dispatch(appActions.selectCompany(selection));
+    dispatch(appActions.fetchChartData(selection?.value));
+  };
 
   return (
     <DropdownSelector
       options={companies}
+      loading={companiesLoading}
+      onChange={(v) => handleOnSelectCompany(v)}
     />
   );
 };

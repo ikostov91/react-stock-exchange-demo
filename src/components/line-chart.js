@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,7 +10,7 @@ import {
 } from 'chart.js';
 import { Line } from "react-chartjs-2";
 import ChartWrapper from './chart-wrapper';
-import { mapChartData } from '../helpers';
+import { useSelector } from 'react-redux';
 
 ChartJS.register(
   CategoryScale,
@@ -24,31 +23,13 @@ ChartJS.register(
 );
 
 const LineChart = () => {
-  const [chartData, setChartData] = useState([]);
-
-  const dataset = 'BOM504991';
-
-  useEffect(() => {
-    fetch(`api/v3/datasets/${process.env.REACT_APP_DATABASE}/${dataset}/data.json?column_index=1&column_index=4&api_key=${process.env.REACT_APP_API_KEY}`, {
-      method: "GET",
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      }
-    })
-      .then(res => res.json())
-      .then(dataset => {
-        setChartData(mapChartData(dataset));
-      })
-      .catch((err) => {
-        console.error(err);
-     });
-  }, []);
+  const { selectedCompany, chartData, chartLoading } = useSelector((state) => state.appReducer);
 
   const data = {
     labels: chartData.map(x => x.label),
     datasets: [
       {
-        label: 'Dataset',
+        label: selectedCompany?.label || '',
         data: chartData.map(x => x.value),
         borderColor: '#012661',
         backgroundColor: '#012661',
@@ -78,7 +59,7 @@ const LineChart = () => {
   };
 
   return (
-    <ChartWrapper hasData={!!chartData.length}>
+    <ChartWrapper hasData={!!chartData.length} isLoading={chartLoading}>
       <Line
         height={100}
         data={data}

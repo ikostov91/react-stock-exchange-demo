@@ -1,13 +1,13 @@
 import Select from 'react-select';
 
-const DropdownSelector = ({ value = null, options = [] }) => {
+const DropdownSelector = ({ options = [], loading = false, onChange }) => {
   return (
     <Select
       className="dropdown-selector"
       classNamePrefix="select"
       defaultValue={null}
-      isDisabled={false}
-      isLoading={false}
+      isLoading={loading}
+      onChange={(e) => onChange(e)}
       isClearable
       isSearchable
       name="dropdown-selector"

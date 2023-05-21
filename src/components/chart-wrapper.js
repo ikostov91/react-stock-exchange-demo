@@ -1,9 +1,14 @@
-const ChartWrapper = ({ hasData = false, children }) => {
+const ChartWrapper = ({ hasData = false, isLoading = false, children }) => {
   return (
     <div className="chart-wrapper">
-      {!hasData ? (
-        <div className="no-data-container">
-          <div className="no-data-label">No data to display</div>
+      {(!hasData && !isLoading) ? (
+        <div className="chart-overlay">
+          <div className="overlay-label">No data to display</div>
+        </div>
+      ) : null}
+      {isLoading ? (
+        <div className="chart-overlay">
+          <div className="overlay-label">Loading...</div>
         </div>
       ) : null}
       {children}
