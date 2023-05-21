@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from "react-chartjs-2";
+import ChartWrapper from './chart-wrapper';
 
 ChartJS.register(
   CategoryScale,
@@ -22,16 +23,7 @@ ChartJS.register(
 );
 
 const LineChart = () => {
-  const [chartData, setChartData] = useState([{
-    label: 'Point 1',
-    data: 1
-  }, {
-    label: 'Point 2',
-    data: 2
-  }, {
-    label: 'Point 3',
-    data: 3
-  }]);
+  const [chartData, setChData] = useState([]);
 
   const data = {
     labels: chartData.map(x => x.label),
@@ -67,11 +59,13 @@ const LineChart = () => {
   };
 
   return (
-    <Line
-      height={100}
-      data={data}
-      options={chartOptions}
-    />
+    <ChartWrapper hasData={!!chartData.length}>
+      <Line
+        height={100}
+        data={data}
+        options={chartOptions}
+      />
+    </ChartWrapper>
   )
 };
 
