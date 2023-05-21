@@ -1,3 +1,5 @@
+import { sortByLabel } from "./utility-helpers";
+
 export const mapCompaniesDataset = (apiData) => {
   if (!apiData) {
     return [];
@@ -9,7 +11,7 @@ export const mapCompaniesDataset = (apiData) => {
       label: dataset.name,
       value: dataset.dataset_code
     };
-  });
+  }).sort(sortByLabel);
   
   return options;
 };
