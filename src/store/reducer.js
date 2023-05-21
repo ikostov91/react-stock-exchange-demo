@@ -11,21 +11,19 @@ const initialState = {
   error: null
 };
 
-const rootUrl = process.env.NODE_ENV === "production" ? "https://data.nasdaq.com" : ""
-
 const createExtraActions = () => {
   const fetchCompanies = createAsyncThunk('stockExchange/fetch-companies', (
     async (obj, { rejectWithValue }) => {
       try {
-        const response = await fetch(`${rootUrl}/api/v3/datasets/?database_code=BSE&api_key=${process.env.REACT_APP_API_KEY}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/StockExchange/companies/BSE`, {
           method: "GET",
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin':'*'
+            'Content-Type': 'application/json'
           }
-        }).then(res => res.json());        
-        return response;
+        });
+        const result = await response.json(); 
+        return JSON.parse(result);
       } catch (error) {
         throw rejectWithValue(error);
       }
@@ -35,15 +33,15 @@ const createExtraActions = () => {
   const fetchChartData = createAsyncThunk('stockExchange/fetch-chart-data', (
     async (dataset, { rejectWithValue }) => {
       try {
-        const response = await fetch(`${rootUrl}/api/v3/datasets/${process.env.REACT_APP_DATABASE}/${dataset}/data.json?column_index=1&column_index=4&api_key=${process.env.REACT_APP_API_KEY}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/StockExchange/company-data/BSE/${dataset}`, {
           method: "GET",
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin':'*'
+            'Content-Type': 'application/json'
           }
-        }).then(res => res.json());
-        return response;
+        });
+        const result = await response.json(); 
+        return JSON.parse(result);
       } catch (error) {
         throw rejectWithValue(error);
       }
